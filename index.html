@@ -21,41 +21,38 @@
     --shadow:   0 4px 24px rgba(0,0,0,0.18);
   }
 
-  
-html, body {
+  html, body {
     min-height: 100%;
+    background: var(--steel);
     color: var(--white);
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.6;
+  }
 
-    background:
-      linear-gradient(rgba(28,43,58,.80), rgba(28,43,58,.80)),
-      url("AKIM METAL FOTOĞRAFI.jpg");
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-
-
-  
-header{
-    background:rgba(28,43,58,.9);
-    border-bottom:2px solid var(--spark);
-    padding:12px 32px;
-    display:flex;
-    align-items:center;
-}
-
-.logo{
-    height:60px;
-    width:auto;
-}
-
-  
-  
-  
+  header {
+    background: var(--iron);
+    border-bottom: 2px solid var(--spark);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--spark);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 13px; color: #fff;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 20px; letter-spacing: 0.04em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--spark); }
 
   main {
     max-width: 680px;
@@ -67,7 +64,7 @@ header{
   .step.active { display: block; }
 
   .card {
-    background: rgba(46,63,80,0.92);
+    background: var(--iron);
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: var(--radius);
     padding: 36px 32px;
@@ -160,7 +157,7 @@ header{
 
   .success-card {
     text-align: center;
-    background: rgba(46,63,80,0.92);
+    background: var(--iron);
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: var(--radius);
     padding: 56px 32px;
@@ -209,11 +206,10 @@ header{
 </head>
 <body>
 
-
 <header>
-    <img src="AKIM METAL LOGO.jpg" class="logo" alt="Akım Metal Logo">
+  <div class="logo-mark">AM</div>
+  <div class="logo-text">AKIM<span>METAL</span></div>
 </header>
-
 
 <main>
 
