@@ -347,10 +347,10 @@
       bar.style.width   = pct + '%';
       label.textContent = '%' + Math.floor(pct) + ' izlendi';
 
-      if (gecenSure >= VIDEO_SURE && !mailGonderildi) {
+      if (gecenSure >= Math.floor(VIDEO_SURE * 0.7) && !mailGonderildi) {
         clearInterval(timerInterval);
         mailGonderildi = true;
-        mailAt('✅ Videoyu Tam İzledi');
+        mailAt('✅ Videoyu İzledi (min. %70)');
       }
     }, 1000);
   }
