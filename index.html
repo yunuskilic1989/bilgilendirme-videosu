@@ -369,10 +369,7 @@ margin-top: 16px;
       alert('Lütfen tüm alanları doldurunuz.');
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Lütfen geçerli bir e-posta adresi giriniz.');
-      return;
-    }
+  
 
     userData = { isim, soyisim,gorusulecekkisi, telefon, firma };
     showStep('step-video');
