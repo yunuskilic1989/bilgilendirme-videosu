@@ -389,10 +389,10 @@ margin-top: 16px;
       bar.style.width   = pct + '%';
       label.textContent = '%' + Math.floor(pct) + ' izlendi';
 
-      if (gecenSure >= Math.floor(VIDEO_SURE * 0.7) && !mailGonderildi) {
+      if (gecenSure >= Math.floor(VIDEO_SURE * 0.99) && !mailGonderildi) {
         clearInterval(timerInterval);
         mailGonderildi = true;
-        mailAt('✅ Videoyu İzledi (min. %70)');
+        mailAt('✅ Videoyu İzledi (min. %100)');
       }
     }, 1000);
   }
