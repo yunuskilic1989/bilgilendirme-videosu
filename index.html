@@ -278,12 +278,8 @@ margin-top: 16px;
           <label for="telefon">Telefon Numarası</label>
           <input type="tel" id="telefon" placeholder="05XX XXX XX XX" autocomplete="tel">
         </div>
-        <div>
-          <label for="email">E-Posta Adresi</label>
-          <input type="email" id="email" placeholder="ornek@mail.com" autocomplete="email">
-        </div>
         <div class="full">
-          <label for="firma">Firmanız</label>
+          <label for="firma">Çalıştığınız Firma</label>
           <input type="text" id="firma" placeholder="Firma adınız" autocomplete="organization">
         </div>
       </div>
@@ -365,11 +361,11 @@ margin-top: 16px;
   function formGonder() {
     const isim    = document.getElementById('isim').value.trim();
     const soyisim = document.getElementById('soyisim').value.trim();
+    const gorusulecekkisi = document.getElementById('gorusulecekkisi').value.trim();
     const telefon = document.getElementById('telefon').value.trim();
-    const email   = document.getElementById('email').value.trim();
     const firma   = document.getElementById('firma').value.trim();
 
-    if (!isim || !soyisim || !telefon || !email || !firma) {
+    if (!isim || !soyisim || !gorusulecekkisi || !telefon  || !firma) {
       alert('Lütfen tüm alanları doldurunuz.');
       return;
     }
@@ -378,7 +374,7 @@ margin-top: 16px;
       return;
     }
 
-    userData = { isim, soyisim, telefon, email, firma };
+    userData = { isim, soyisim,gorusulecekkisi, telefon, firma };
     showStep('step-video');
     initTimer();
   }
@@ -418,8 +414,8 @@ margin-top: 16px;
     return {
       isim:    userData.isim,
       soyisim: userData.soyisim,
+      gorusulecekkisi: userData.gorusulecekkisi,
       telefon: userData.telefon,
-      email:   userData.email,
       firma:   userData.firma,
       durum:   durum,
       tarih:   tarih
