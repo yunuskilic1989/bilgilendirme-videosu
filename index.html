@@ -16,7 +16,6 @@
     --spark:    #E8500A;
     --spark-lt: #FF6B2B;
     --silver:   #8FA3B1;
-    --light:    #F0F4F7;
     --white:    #FFFFFF;
     --radius:   6px;
     --shadow:   0 4px 24px rgba(0,0,0,0.18);
@@ -31,7 +30,6 @@
     line-height: 1.6;
   }
 
-  /* ── HEADER ── */
   header {
     background: var(--iron);
     border-bottom: 2px solid var(--spark);
@@ -56,7 +54,6 @@
   }
   .logo-text span { color: var(--spark); }
 
-  /* ── LAYOUT ── */
   main {
     max-width: 680px;
     margin: 0 auto;
@@ -66,7 +63,6 @@
   .step { display: none; }
   .step.active { display: block; }
 
-  /* ── FORM CARD ── */
   .card {
     background: var(--iron);
     border: 1px solid rgba(255,255,255,0.07);
@@ -129,35 +125,12 @@
   .btn:hover { background: var(--spark-lt); }
   .btn:active { transform: scale(0.98); }
 
-  /* ── VIDEO STEP ── */
   .video-header { margin-bottom: 20px; }
   .video-wrap {
-    position: relative;
     background: #000;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow);
-  }
-  video {
-    width: 100%;
-    display: block;
-    max-height: 400px;
-    object-fit: contain;
-    background: #000;
-  }
-
-  /* overlay that blocks controls until form done */
-  .video-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex; align-items: center; justify-content: center;
-    cursor: not-allowed;
-    z-index: 10;
-  }
-  .video-overlay p {
-    color: rgba(255,255,255,0.7); font-size: 13px;
-    background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 4px;
-    text-align: center;
   }
 
   .progress-bar-wrap {
@@ -166,25 +139,22 @@
   }
   .progress-bar {
     height: 100%; background: var(--spark);
-    width: 0%; transition: width 0.5s linear;
+    width: 0%; transition: width 1s linear;
     border-radius: 2px;
   }
   .progress-label {
     text-align: right; font-size: 12px; color: var(--silver); margin-top: 6px;
   }
 
-  .warning-box {
-    background: rgba(232,80,10,0.12);
-    border: 1px solid rgba(232,80,10,0.35);
+  .info-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--radius);
     padding: 12px 16px;
-    font-size: 13px; color: #ffb99a;
+    font-size: 13px; color: var(--silver);
     margin-top: 16px;
-    display: none;
   }
-  .warning-box.show { display: block; }
 
-  /* ── SUCCESS STEP ── */
   .success-card {
     text-align: center;
     background: var(--iron);
@@ -208,7 +178,6 @@
   }
   .success-card p { color: var(--silver); font-size: 14px; }
 
-  /* ── SENDING OVERLAY ── */
   #sending-overlay {
     display: none;
     position: fixed; inset: 0;
@@ -268,6 +237,10 @@
           <label for="email">E-Posta Adresi</label>
           <input type="email" id="email" placeholder="ornek@mail.com" autocomplete="email">
         </div>
+        <div class="full">
+          <label for="firma">Firmanız</label>
+          <input type="text" id="firma" placeholder="Firma adınız" autocomplete="organization">
+        </div>
       </div>
 
       <button class="btn" onclick="formGonder()">
@@ -288,10 +261,15 @@
     </div>
 
     <div class="video-wrap">
-      <video id="videoPlayer" controls controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;">
-        <source src="video.mp4" type="video/mp4">
-        Tarayıcınız video oynatmayı desteklemiyor.
-      </video>
+      <iframe
+        id="videoFrame"
+        src="https://drive.google.com/file/d/1p1aEMIo27MZZmRa3Cz6oEADAWg6dYB0y/preview"
+        width="100%"
+        height="400"
+        allow="autoplay"
+        allowfullscreen
+        style="border:none;display:block;"
+      ></iframe>
     </div>
 
     <div class="progress-bar-wrap">
@@ -299,8 +277,8 @@
     </div>
     <p class="progress-label" id="progressLabel">%0 izlendi</p>
 
-    <div class="warning-box" id="warningBox">
-      ⚠️ Video erken kapatıldı. Lütfen videoyu baştan izleyiniz. Kaydınız "Tam İzlemedi" olarak not edilecektir.
+    <div class="info-box">
+      ℹ️ Video otomatik olarak takip edilmektedir. Sayfayı kapatmayınız.
     </div>
   </div>
 
@@ -315,7 +293,6 @@
 
 </main>
 
-<!-- Sending overlay -->
 <div id="sending-overlay">
   <div class="spinner"></div>
   <p style="color:var(--silver);font-size:14px">Kaydınız gönderiliyor...</p>
@@ -324,27 +301,29 @@
 <script>
   emailjs.init("o29bBn8G55wsplpLE");
 
-  const SERVICE_ID  = "service_39tdxyc";
-  const TEMPLATE_ID = "template_g1pak1j";
+  const SERVICE_ID   = "service_39tdxyc";
+  const TEMPLATE_ID  = "template_g1pak1j";
+  const VIDEO_SURE   = 193; // saniye (3dk 13sn)
 
-  let userData = {};
+  let userData       = {};
   let mailGonderildi = false;
+  let gecenSure      = 0;
+  let timerInterval  = null;
 
-  /* ── Adım göster ── */
   function showStep(id) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ── Form doğrulama & video adımına geç ── */
   function formGonder() {
     const isim    = document.getElementById('isim').value.trim();
     const soyisim = document.getElementById('soyisim').value.trim();
     const telefon = document.getElementById('telefon').value.trim();
     const email   = document.getElementById('email').value.trim();
+    const firma   = document.getElementById('firma').value.trim();
 
-    if (!isim || !soyisim || !telefon || !email) {
+    if (!isim || !soyisim || !telefon || !email || !firma) {
       alert('Lütfen tüm alanları doldurunuz.');
       return;
     }
@@ -353,56 +332,49 @@
       return;
     }
 
-    userData = { isim, soyisim, telefon, email };
+    userData = { isim, soyisim, telefon, email, firma };
     showStep('step-video');
-    initVideo();
+    initTimer();
   }
 
-  /* ── Video takip ── */
-  function initVideo() {
-    const video    = document.getElementById('videoPlayer');
-    const bar      = document.getElementById('progressBar');
-    const label    = document.getElementById('progressLabel');
-    const warning  = document.getElementById('warningBox');
+  function initTimer() {
+    const bar   = document.getElementById('progressBar');
+    const label = document.getElementById('progressLabel');
 
-    video.addEventListener('timeupdate', () => {
-      if (!video.duration) return;
-      const pct = (video.currentTime / video.duration) * 100;
+    timerInterval = setInterval(() => {
+      gecenSure++;
+      const pct = Math.min((gecenSure / VIDEO_SURE) * 100, 100);
       bar.style.width   = pct + '%';
       label.textContent = '%' + Math.floor(pct) + ' izlendi';
-    });
 
-    /* Video bitti → tam izledi */
-    video.addEventListener('ended', () => {
-      if (!mailGonderildi) {
+      if (gecenSure >= VIDEO_SURE && !mailGonderildi) {
+        clearInterval(timerInterval);
         mailGonderildi = true;
         mailAt('✅ Videoyu Tam İzledi');
       }
-    });
-
-    /* Sayfa kapanıyor / başka sekmeye geçiyor → erken çıkış */
-    window.addEventListener('beforeunload', () => {
-      if (!mailGonderildi && video.currentTime > 1) {
-        mailGonderildi = true;
-        const pct = Math.floor((video.currentTime / video.duration) * 100);
-        /* beacon ile gönder (sayfa kapanırken) */
-        const params = buildParams('❌ Erken Kapattı — %' + pct + ' izledi');
-        navigator.sendBeacon
-          ? emailjs.send(SERVICE_ID, TEMPLATE_ID, params).catch(() => {})
-          : null;
-      }
-    });
+    }, 1000);
   }
 
-  /* ── Mail gönder ── */
+  // Sayfa kapatılırsa erken çıkış maili gönder
+  window.addEventListener('beforeunload', () => {
+    if (!mailGonderildi && gecenSure > 3) {
+      mailGonderildi = true;
+      clearInterval(timerInterval);
+      const pct = Math.floor((gecenSure / VIDEO_SURE) * 100);
+      const params = buildParams('❌ Erken Kapattı — %' + pct + ' izledi (' + gecenSure + ' saniye)');
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, params).catch(() => {});
+    }
+  });
+
   function buildParams(durum) {
-    const now = new Date();
+    const now   = new Date();
     const tarih = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR');
     return {
       isim:    userData.isim,
       soyisim: userData.soyisim,
       telefon: userData.telefon,
       email:   userData.email,
+      firma:   userData.firma,
       durum:   durum,
       tarih:   tarih
     };
@@ -420,7 +392,6 @@
       .catch((err) => {
         overlay.classList.remove('show');
         console.error('EmailJS hata:', err);
-        // Yine de başarı sayfasını göster
         showStep('step-success');
       });
   }
