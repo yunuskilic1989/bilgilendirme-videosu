@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bilgilendirme Videosu — Akim Metal</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Barlow+Condensed:wght@600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --steel:    #1C2B3A;
+    --iron:     #2E3F50;
+    --spark:    #E8500A;
+    --spark-lt: #FF6B2B;
+    --silver:   #8FA3B1;
+    --light:    #F0F4F7;
+    --white:    #FFFFFF;
+    --radius:   6px;
+    --shadow:   0 4px 24px rgba(0,0,0,0.18);
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--steel);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--iron);
+    border-bottom: 2px solid var(--spark);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--spark);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 13px; color: #fff;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 20px; letter-spacing: 0.04em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--spark); }
+
+  /* ── LAYOUT ── */
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* ── FORM CARD ── */
+  .card {
+    background: var(--iron);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    box-shadow: var(--shadow);
+  }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--spark); text-transform: uppercase; margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 700; line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    color: var(--silver); font-size: 14px; margin-bottom: 28px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+
+  label {
+    display: block;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.06em;
+    color: var(--silver); text-transform: uppercase; margin-bottom: 6px;
+  }
+  input {
+    width: 100%;
+    background: var(--steel);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    color: var(--white);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus { border-color: var(--spark); }
+  input::placeholder { color: rgba(255,255,255,0.2); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--spark);
+    color: #fff;
+    border: none; border-radius: var(--radius);
+    padding: 13px 28px;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    width: 100%; margin-top: 22px;
+    transition: background 0.2s, transform 0.1s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn:hover { background: var(--spark-lt); }
+  .btn:active { transform: scale(0.98); }
+
+  /* ── VIDEO STEP ── */
+  .video-header { margin-bottom: 20px; }
+  .video-wrap {
+    position: relative;
+    background: #000;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  video {
+    width: 100%;
+    display: block;
+    max-height: 400px;
+    object-fit: contain;
+    background: #000;
+  }
+
+  /* overlay that blocks controls until form done */
+  .video-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    cursor: not-allowed;
+    z-index: 10;
+  }
+  .video-overlay p {
+    color: rgba(255,255,255,0.7); font-size: 13px;
+    background: rgba(0,0,0,0.5); padding: 10px 18px; border-radius: 4px;
+    text-align: center;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px; height: 4px; margin-top: 14px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; background: var(--spark);
+    width: 0%; transition: width 0.5s linear;
+    border-radius: 2px;
+  }
+  .progress-label {
+    text-align: right; font-size: 12px; color: var(--silver); margin-top: 6px;
+  }
+
+  .warning-box {
+    background: rgba(232,80,10,0.12);
+    border: 1px solid rgba(232,80,10,0.35);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px; color: #ffb99a;
+    margin-top: 16px;
+    display: none;
+  }
+  .warning-box.show { display: block; }
+
+  /* ── SUCCESS STEP ── */
+  .success-card {
+    text-align: center;
+    background: var(--iron);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 56px 32px;
+    box-shadow: var(--shadow);
+  }
+  .checkmark {
+    width: 64px; height: 64px;
+    background: rgba(34,197,94,0.15);
+    border: 2px solid #22c55e;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 28px;
+  }
+  .success-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px; margin-bottom: 10px;
+  }
+  .success-card p { color: var(--silver); font-size: 14px; }
+
+  /* ── SENDING OVERLAY ── */
+  #sending-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(28,43,58,0.85);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+  #sending-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--spark);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 520px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+    .card, .success-card { padding: 24px 18px; }
+    main { padding: 32px 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">AM</div>
+  <div class="logo-text">AKIM<span>METAL</span></div>
+</header>
+
+<main>
+
+  <!-- STEP 1: FORM -->
+  <div class="step active" id="step-form">
+    <div class="card">
+      <p class="eyebrow">Bilgilendirme Videosu</p>
+      <h1>Kayıt Formu</h1>
+      <p class="subtitle">Videoyu izlemeden önce lütfen bilgilerinizi doldurunuz.</p>
+
+      <div class="form-grid">
+        <div>
+          <label for="isim">Ad</label>
+          <input type="text" id="isim" placeholder="Adınız" autocomplete="given-name">
+        </div>
+        <div>
+          <label for="soyisim">Soyad</label>
+          <input type="text" id="soyisim" placeholder="Soyadınız" autocomplete="family-name">
+        </div>
+        <div>
+          <label for="telefon">Telefon Numarası</label>
+          <input type="tel" id="telefon" placeholder="05XX XXX XX XX" autocomplete="tel">
+        </div>
+        <div>
+          <label for="email">E-Posta Adresi</label>
+          <input type="email" id="email" placeholder="ornek@mail.com" autocomplete="email">
+        </div>
+      </div>
+
+      <button class="btn" onclick="formGonder()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 3l14 9-14 9V3z"/>
+        </svg>
+        Videoyu İzlemeye Başla
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: VIDEO -->
+  <div class="step" id="step-video">
+    <div class="video-header">
+      <p class="eyebrow">Bilgilendirme Videosu</p>
+      <h1>Lütfen videoyu izleyiniz</h1>
+      <p class="subtitle" style="margin-bottom:0">Video tamamlandığında kayıt otomatik olarak gönderilecektir.</p>
+    </div>
+
+    <div class="video-wrap">
+      <video id="videoPlayer" controls controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;">
+        <source src="video.mp4" type="video/mp4">
+        Tarayıcınız video oynatmayı desteklemiyor.
+      </video>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="progress-label" id="progressLabel">%0 izlendi</p>
+
+    <div class="warning-box" id="warningBox">
+      ⚠️ Video erken kapatıldı. Lütfen videoyu baştan izleyiniz. Kaydınız "Tam İzlemedi" olarak not edilecektir.
+    </div>
+  </div>
+
+  <!-- STEP 3: SUCCESS -->
+  <div class="step" id="step-success">
+    <div class="success-card">
+      <div class="checkmark">✓</div>
+      <h2>Teşekkürler!</h2>
+      <p>Kaydınız başarıyla alındı.<br>Bilgilendirme videosu izleme kaydınız sisteme işlenmiştir.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Sending overlay -->
+<div id="sending-overlay">
+  <div class="spinner"></div>
+  <p style="color:var(--silver);font-size:14px">Kaydınız gönderiliyor...</p>
+</div>
+
+<script>
+  emailjs.init("o29bBn8G55wsplpLE");
+
+  const SERVICE_ID  = "service_39tdxyc";
+  const TEMPLATE_ID = "template_g1pak1j";
+
+  let userData = {};
+  let mailGonderildi = false;
+
+  /* ── Adım göster ── */
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── Form doğrulama & video adımına geç ── */
+  function formGonder() {
+    const isim    = document.getElementById('isim').value.trim();
+    const soyisim = document.getElementById('soyisim').value.trim();
+    const telefon = document.getElementById('telefon').value.trim();
+    const email   = document.getElementById('email').value.trim();
+
+    if (!isim || !soyisim || !telefon || !email) {
+      alert('Lütfen tüm alanları doldurunuz.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Lütfen geçerli bir e-posta adresi giriniz.');
+      return;
+    }
+
+    userData = { isim, soyisim, telefon, email };
+    showStep('step-video');
+    initVideo();
+  }
+
+  /* ── Video takip ── */
+  function initVideo() {
+    const video    = document.getElementById('videoPlayer');
+    const bar      = document.getElementById('progressBar');
+    const label    = document.getElementById('progressLabel');
+    const warning  = document.getElementById('warningBox');
+
+    video.addEventListener('timeupdate', () => {
+      if (!video.duration) return;
+      const pct = (video.currentTime / video.duration) * 100;
+      bar.style.width   = pct + '%';
+      label.textContent = '%' + Math.floor(pct) + ' izlendi';
+    });
+
+    /* Video bitti → tam izledi */
+    video.addEventListener('ended', () => {
+      if (!mailGonderildi) {
+        mailGonderildi = true;
+        mailAt('✅ Videoyu Tam İzledi');
+      }
+    });
+
+    /* Sayfa kapanıyor / başka sekmeye geçiyor → erken çıkış */
+    window.addEventListener('beforeunload', () => {
+      if (!mailGonderildi && video.currentTime > 1) {
+        mailGonderildi = true;
+        const pct = Math.floor((video.currentTime / video.duration) * 100);
+        /* beacon ile gönder (sayfa kapanırken) */
+        const params = buildParams('❌ Erken Kapattı — %' + pct + ' izledi');
+        navigator.sendBeacon
+          ? emailjs.send(SERVICE_ID, TEMPLATE_ID, params).catch(() => {})
+          : null;
+      }
+    });
+  }
+
+  /* ── Mail gönder ── */
+  function buildParams(durum) {
+    const now = new Date();
+    const tarih = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR');
+    return {
+      isim:    userData.isim,
+      soyisim: userData.soyisim,
+      telefon: userData.telefon,
+      email:   userData.email,
+      durum:   durum,
+      tarih:   tarih
+    };
+  }
+
+  function mailAt(durum) {
+    const overlay = document.getElementById('sending-overlay');
+    overlay.classList.add('show');
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, buildParams(durum))
+      .then(() => {
+        overlay.classList.remove('show');
+        showStep('step-success');
+      })
+      .catch((err) => {
+        overlay.classList.remove('show');
+        console.error('EmailJS hata:', err);
+        // Yine de başarı sayfasını göster
+        showStep('step-success');
+      });
+  }
+</script>
+</body>
+</html>
