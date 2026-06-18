@@ -182,14 +182,16 @@ body {
     text-align: right; font-size: 12px; color: var(--silver); margin-top: 6px;
   }
 
-  .info-box {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    font-size: 13px; color: var(--silver);
-    margin-top: 16px;
-  }
+.info-box {
+  background: rgba(0, 0, 0, 0.7); /* Koyu siyah, hafif saydam */
+border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--white); /* Yazı rengini de beyaz yap, okunurluk için */
+margin-top: 16px;
+}
+
 
   .success-card {
     text-align: center;
@@ -295,8 +297,8 @@ body {
   <div class="step" id="step-video">
     <div class="video-header">
       <p class="eyebrow">Bilgilendirme Videosu</p>
-      <h1>Lütfen videoyu izleyiniz</h1>
-      <p class="subtitle" style="margin-bottom:0">Video tamamlandığında kayıt otomatik olarak gönderilecektir.</p>
+      <h1>Lütfen videoyu sonuna kadar izleyiniz</h1>
+      <p class="subtitle" style="margin-bottom:0">Video tamamlandığında kayıt yetkililere otomatik olarak gönderilecektir.</p>
     </div>
 
     
@@ -318,7 +320,7 @@ body {
     <p class="progress-label" id="progressLabel">%0 izlendi</p>
 
     <div class="info-box">
-      ℹ️ Video otomatik olarak takip edilmektedir. Sayfayı kapatmayınız.
+      ℹ️ Video tamamlanmadan kapatmayınız.Erken kapatırsanız baştan izlemek zorunda kalırsınız.
     </div>
   </div>
 
